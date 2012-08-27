@@ -28,6 +28,14 @@
       margin: 0;
       padding: 0;
     }
+
+    @media screen {
+      .note { display: none; visibility: visible }
+      .toolbar { display:none }
+    }
+    @media print {
+      .note { display: block; visibility: visible; color: red; font-size: 110%; line-height: 1.5em; }
+    }
   </style> 
 </head>
 <body onload="sh_highlightDocument();">
@@ -61,6 +69,7 @@ Geplante Agenda, entferne was du in Folien umgesetzt hast.
       <pre class="sh_haskell">f = undefined</pre>
     </li>
   </ul>
+  <div class="note">Zeug erklären</div>
 </div>
 
 <!--
