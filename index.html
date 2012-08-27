@@ -4,8 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"> 
 <head> 
   <title>Themenabend Haskell &amp; Yesod</title> 
+  <!-- Slidy: http://www.w3.org/Talks/Tools/Slidy2/ -->
   <link rel="stylesheet" type="text/css" media="screen, projection, print" href="slidy.css" /> 
-  <script src="slidy.js" charset="utf-8" type="text/javascript"></script> 
+  <script src="slidy.js" charset="utf-8"
+  type="text/javascript"></script> 
+
+  <!-- Highlighting: http://zenzike.com/posts/2010-10-14-highlighting-haskell-with-shjs -->
+  <link rel="stylesheet" type="text/css" href="sh_style.css" />
+  <script type="text/javascript" src="sh_main.js" > </script>
+  <script type="text/javascript" src="sh_haskell.js" > </script>
+  <script type="text/javascript" src="sh_init.js" > </script>
+
+  <!-- Custom style -->
   <style type="text/css"> 
     .cover {
       text-align: center;
@@ -20,7 +30,7 @@
     }
   </style> 
 </head>
-<body>
+<body onload="sh_highlightDocument();">
 
 <div class="slide cover"> 
   <h1>Themenabend Haskell &amp; Yesod</h1>
@@ -37,7 +47,21 @@
   * Bücher/Doku
   * Hackage/Cabal
   * Hayoo/Hoogle
+-->
+<!--
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
+-->
+<div class="slide">
+  <h2>Syntax</h2>
+  <ul>
+    <li>
+      <p>Rumpf:</p>
+      <pre class="sh_haskell">f = undefined</pre>
+    </li>
+  </ul>
+</div>
+
+<!--
 * Monads, Functors, Applicatives (maloi) (30 min)
 * Combinatoric Parsing: Attoparsec (astro) (15 min)
 * Template Haskell (maloi) (20min)
