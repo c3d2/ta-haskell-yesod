@@ -28,6 +28,14 @@
       margin: 0;
       padding: 0;
     }
+
+    @media screen {
+      .note { display: none; visibility: visible }
+      .toolbar { display:none }
+    }
+    @media print {
+      .note { display: block; visibility: visible; color: red; font-size: 110%; line-height: 1.5em; }
+    }
   </style> 
 </head>
 <body onload="sh_highlightDocument();">
@@ -54,14 +62,39 @@ Geplante Agenda, entferne was du in Folien umgesetzt hast.
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
 -->
 <div class="slide">
-  <h2>Syntax</h2>
-  <ul>
-    <li>
-      <p>Rumpf:</p>
-      <pre class="sh_haskell">f = undefined</pre>
-    </li>
-  </ul>
+  <h1>Syntax</h2>
 </div>
+<div class="slide">
+  <h2>Funktionen</h2>
+  <pre>fac :: Integer -> Integer
+fac 1 = 1
+fac n = n * fac (n - 1)
+  </pre>
+  <p class="note">Fakultät</p>
+  <p class="note">-&gt; Impliziert</p>
+  <p class="note">Pattern matching des Parameters</p>
+  <p class="note">Integer is bignum</p>
+</div>
+<div class="slide">
+  <h2>Guards</h2>
+  <pre>fac :: Integer -> Integer
+fac n
+    | n &lt;= 1    = 1
+    | otherwise = n * fac (n - 1)
+  </pre>
+  <p class="note">Boolean expression</p>
+</div>
+
+<!--
+case
+if
+let/where
+module
+-->
+<div class="slide">
+  <h2>Currying</h2>
+</div>
+<!-- sections -->
 
 <!--
 * Monads, Functors, Applicatives (maloi) (30 min)
