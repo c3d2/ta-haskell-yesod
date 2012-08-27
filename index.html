@@ -65,6 +65,85 @@ Geplante Agenda, entferne was du in Folien umgesetzt hast.
 
 <!--
 * Monads, Functors, Applicatives (maloi) (30 min)
+-->
+<div class="slide">
+  <h2>Functors - Motivation</h2>
+  <ul class="incremental">
+    <li>
+      <p>Eine Funktion, die jeder liebt:</p>
+      <pre class="sh_haskell">map :: (a -> b) -> [] a -> [] b -- map :: (a -> b) -> [a] -> [b]</pre>
+    </li>
+    <li>
+      <p>Wie sieht so eine Funktion z.B. fuer Baeume aus?</p>
+      <pre class="sh_haskell">data Tree a = Leaf a | Node a (Tree a) (Tree a)</pre>
+      <pre class="sh_haskell">mapTree :: (a -> b) -> Tree a -> Tree b</pre>
+    </li>
+    <li>
+      <p>Maybe just nothing</p>
+      <pre class="sh_haskell">data Maybe a = Just a | Nothing</pre>
+      <pre class="sh_haskell">mapMaybe :: (a -> b) -> Maybe a -> Maybe b</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functors - Motivation (2)</h2>
+  <ul class="incremental">
+    <li>
+      <pre class="sh_haskell">map      :: (a -> b) -> []    a -> []    b</pre>
+      <pre class="sh_haskell">mapTree  :: (a -> b) -> Tree  a -> Tree  b</pre>
+      <pre class="sh_haskell">mapMaybe :: (a -> b) -> Maybe a -> Maybe b</pre>
+    </li>
+    <li>
+      <p>Die Funktionen haben - bis auf Umbenennung des Typ-Konstruktors - die gleiche Signatur<p>
+    </li>
+    <li>
+      <p><strong>Type classes to the rescue!</strong></p>
+    </li>
+    <li>
+      <p>Zuvor aber ein kleiner Ausflug</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Kinds: Typen von Typen - WTF?</h2>
+  <ul class="incremental">
+    <li>
+      <p>In Haskell hat jeder Ausdruck einen Typ<p>
+    </li>
+    <li>
+      <p>Diese Typen haben wiederum "Typen" - <strong>Kinds</strong><p>
+    </li>
+    <li>
+      <p>Jeder monomorphe Typ (nullstelliger Typ-Konstuktor) hat Kind <strong>*</strong><p>
+    </li>
+    <li>
+      <p><strong>k1->k2</strong> ist der Kind von einstelligen Typ-Konstruktoren, die Typen von Kind <strong>k1</strong> nehmen und Typen von Kind <strong>k2</strong> erzeugen</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Kinds: Beispiele</h2>
+  <ul class="incremental">
+    <li>
+      <pre class="sh_haskell">Int :: *</pre>
+      <pre class="sh_haskell">Char :: *</pre>
+      <pre class="sh_haskell">Maybe Int :: *</pre>
+      <pre class="sh_haskell">Int -> Bool :: *</pre>
+    </li>
+    <li>
+      <pre class="sh_haskell">Maybe :: * -> *</pre>
+      <pre class="sh_haskell">(->) :: * -> *</pre>
+      <pre class="sh_haskell">(,,) :: * -> * -> *</pre>
+    </li>
+    <li>
+      <pre class="sh_haskell">data Funny f a = Funny a (f a)</pre>
+    </li>
+    <li>
+      <pre class="sh_haskell">Funny :: (* -> *) -> * -> *</pre>
+    </li>
+  </ul>
+</div>
+<!--
 * Combinatoric Parsing: Attoparsec (astro) (15 min)
 * Template Haskell (maloi) (20min)
 * Profiling (astro) (15min)
