@@ -93,7 +93,7 @@ cabal install -p yesod-platform</pre>
 <!--
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
 -->
-<div class="slide">
+<div class="slide cover">
   <h1>Syntax</h1>
 </div>
 <div class="slide">
@@ -265,7 +265,7 @@ instance Num Double -- Defined in `GHC.Float'</pre>
   <h2>Module</h2>
   <p>Am Beginn von Quellcode-Dateien:</p>
   <pre class="sh_haskell">module MeinKram where</pre>
-  <pre class="sh_haskell">module Main (main) where
+  <pre class="sh_haskell" style="margin-top: 6em">module Main (main) where
 
 import MainKram
 import qualified Data.Text as T
@@ -277,6 +277,9 @@ fnord = T.pack "fnord"</pre>
 <!--
 * Monads, Functors, Applicatives (maloi) (30 min)
 -->
+<div class="slide cover">
+  <h1>Functor, Applicative, Monad</h1>
+</div>
 <div class="slide">
   <h2>Functors - Motivation</h2>
   <ul class="incremental">
