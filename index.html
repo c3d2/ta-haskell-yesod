@@ -54,10 +54,42 @@
 Geplante Agenda, entferne was du in Folien umgesetzt hast.
 
 * Intro: (astro) (10 min)
-  * Bücher/Doku
-  * Hackage/Cabal
   * Hayoo/Hoogle
 -->
+<div class="slide">
+  <h2>Hilfe</h2>
+  <ul>
+    <li>
+      haskell.org
+      <ul>
+	<li>Library documentation</li>
+	<li>Hackage library database</li>
+      </ul>
+    </li>
+    <li><a href="http://book.realworldhaskell.org/read/">Real World Haskell</a></li>
+    <li><a href="http://www.learnyouahaskell.com/">Learn You a Haskell</a></li>
+    <li>
+      Funktionssuche:
+      <ul>
+	<li><a href="http://holumbus.fh-wedel.de/hayoo/hayoo.html">Hayoo!</a></li>
+	<li><a href="http://www.haskell.org/hoogle/">Hoogle</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Paket-Management mit Cabal</h2>
+  <pre>apt-get install ghc cabal-install
+
+# Updates list of known packages
+cabal update
+
+# Installs package with library profiling
+cabal install -p yesod-platform</pre>
+  <p class="note">Glasgow Haskell Compiler</p>
+  <p class="note">Mit Dependencies</p>
+  <p class="note">-p für Profiling</p>
+</div>
 <!--
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
 -->
