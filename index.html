@@ -268,7 +268,7 @@ Just :: a -> Maybe a
 <div class="slide">
   <h2>Functors - Motivation (2)</h2>
   <ul class="incremental">
-    <li>
+    <li style="list-style-type: none;">
       <pre class="sh_haskell">map      :: (a -> b) -> []    a -> []    b</pre>
       <pre class="sh_haskell">mapTree  :: (a -> b) -> Tree  a -> Tree  b</pre>
       <pre class="sh_haskell">mapMaybe :: (a -> b) -> Maybe a -> Maybe b</pre>
@@ -328,7 +328,7 @@ Funny :: (* -> *) -> * -> *</pre>
 <div class="slide">
   <h2>Functors redux</h2>
   <ul class="incremental">
-    <li>
+    <li style="list-style-type: none;">
       <pre class="sh_haskell">map      :: (a -> b) -> []    a -> []    b</pre>
       <pre class="sh_haskell">mapTree  :: (a -> b) -> Tree  a -> Tree  b</pre>
       <pre class="sh_haskell">mapMaybe :: (a -> b) -> Maybe a -> Maybe b</pre>
@@ -351,7 +351,7 @@ Funny :: (* -> *) -> * -> *</pre>
 <div class="slide">
   <h2>Functor - the easy type class</h2>
   <ul class="incremental">
-    <li>
+    <li style="list-style-type: none;">
       <pre class="sh_haskell">class Functor f where
   fmap :: (a -> b) -> f a -> f b</pre>
     </li>
@@ -359,10 +359,159 @@ Funny :: (* -> *) -> * -> *</pre>
       <h3>Intuition<h3>
     </li>
     <li>
-    <p>Ein Functor stellt eine Art </strong>Container</strong> dar, der es ermoeglicht (mit fmap) eine Funktion (uniform) auf alle Elemente in diesem Container anzuwenden</p>
+    <p>Ein Functor stellt eine Art <strong>Container</strong> dar, der es ermoeglicht (mit fmap) eine Funktion (uniform) auf alle Elemente in diesem Container anzuwenden</p>
     </li>
     <li>
       <p>Alternativ dazu kann man Functor auch als einen <strong>computational context</strong> sehen und fmap wendet eine Funktion auf einen Wert in einem Kontext an ohne diesen Kontext zu aendern</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - Kind is kind of important</h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Functor Int where
+  fmap = ...</pre>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">
+[1 of 1] Compiling Main             ( 2012-03-15.lhs, interpreted )
+
+2010-10-25.lhs:145:19:
+    Kind mis-match
+    The first argument of `Functor' should have kind `* -> *',
+    but `Int' has kind `*'
+    In the instance declaration for `Functor Int'
+      </pre>
+    </li>
+    <li>
+    <p>Wie die Fehlermeldung vermuten laesst, hat Int den Kind *</p>
+    <p>Functor moechte aber, dass sein erstes Argument Kind * -> * hat</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - Listen </h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Functor [] where
+  fmap _ []     = []
+  fmap g (x:xs) = g x : fmap g xs -- oder einfach fmap = map</pre>
+    </li>
+    <li>
+    <p>Listen sind ein gutes Beispiel fuer einen Functor, der als Container - ueber den man mappen kann - aufgefasst werden kann</p>
+    </li>
+    <li>
+    <p>Kann aber auch als Berechnung mit nicht-deterministischen Ergebnis gesehen werden</p>
+    </li>
+    <li>
+    <p>Da fmap den Kontext nicht aendert ist das Resultat wiederum nicht-deterministisch</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude> fmap (+1) [1,2,3]
+[2,3,4]</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - Maybe baby </h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Functor Maybe where
+  fmap _ Nothing  = Nothing
+  fmap g (Just a) = Just (g a)</pre>
+    </li>
+    <li>
+    <p>Maybe kann als Container gesehen werden, der ein Element haben <strong>kann</strong></p>
+    </li>
+    <li>
+    <p>Oder als Berechnung mit moeglichem Fehlschlag</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude> fmap (+23) (Just 19)
+Just 42
+Prelude> fmap (+23) Nothing
+Nothing</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - Do you read me? </h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Functor ((->) r) where
+    fmap f g = (.) -- (\x -> f (g x))</pre>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">fmap :: (a -> b) -> f a        -> f b
+fmap :: (a -> b) -> ((->) r a) -> ((->) r b)
+fmap :: (a -> b) -> (r -> a)   -> (r -> b)</pre>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">(.)  :: (b -> c) -> (a -> b)   -> a -> c</pre>
+    </li>
+    <li>
+    <p>Container, der mit Werten vom Typ r indiziert ist</p>
+    </li>
+    <li>
+    <p>Berechnung, die Werte in einer (read-only) Umgebung nachschlagen kann</p>
+    </li>
+    <li>
+    <p><strong>(->) r</strong> wird deshalb oftmals auch als <strong>reader monad</strong> bezeichnet (mehr dazu spaeter)</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude> :m Control.Monad.Instances
+Prelude Control.Monad.Instances> fmap (*3) (+10) $ 1
+33
+Prelude Control.Monad.Instances> (fmap (*3) (+10) $ 1) == ((*3) . (+10) $ 1)
+True</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - Sin is lawlessness </h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">1. fmap id = id -- id = (\x -> x) und damit id :: a -> a
+2. fmap (g . h) = (fmap g) . (fmap h)</pre>
+    </li>
+    <li>
+    <p>Sichern, dass fmap nur die Werte, nicht aber deren Kontext aendert</p>
+    </li>
+    <li>
+    <p>1. Wenn man id ueber einen Functor mapped, sollte der resultierende Functor gleich dem urspruenglichen sein</p>
+    </li>
+    <li>
+    <p>2. Es ist egal ob man die Komposition zweier Funktionen ueber einen Functor mapped oder erst die eine Funktion mapped und dann die andere</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - I break the law </h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Functor [] where
+  fmap _ [] = []
+  fmap g (x:xs) = g x : g x : fmap g xs
+</pre>
+    </li>
+    <li>
+    <p>Gueltige Functor Instanz</p>
+    </li>
+    <li>
+    <p><strong>Aber:</strong> haelt sich nicht an das erste Gesetz!</p>
+      <pre class="sh_haskell">fmap id [1,2,3] == [1,1,2,2,3,3]
+id [1,2,3]      == [1,2,3]
+</pre>
+    </li>
+    <li>
+    <p><strong>Und:</strong> haelt sich nicht an das zweite Gesetz!</p>
+      <pre class="sh_haskell">fmap (id . id) [1,2,3]          == [1,1,2,2,3,3]
+(fmap id) . (fmap id) $ [1,2,3] == [1,1,1,1,2,2,2,2,3,3,3,3]
+</pre>
     </li>
   </ul>
 </div>
