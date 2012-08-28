@@ -24,3 +24,12 @@ fac''' n =
 facs = 1 : go 2
   where go :: Integer -> [Integer]
         go n = n : map (* n) (go (n + 1))
+
+fib :: Integer -> Integer
+fib 0 = 0
+fib 1 = 1
+fib n =
+  let r = fib $ n - 1
+      r' = fib $ n - 2
+  in r + r'
+           
