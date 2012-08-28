@@ -54,10 +54,42 @@
 Geplante Agenda, entferne was du in Folien umgesetzt hast.
 
 * Intro: (astro) (10 min)
-  * Bücher/Doku
-  * Hackage/Cabal
   * Hayoo/Hoogle
 -->
+<div class="slide">
+  <h2>Hilfe</h2>
+  <ul>
+    <li>
+      haskell.org
+      <ul>
+	<li>Library documentation</li>
+	<li>Hackage library database</li>
+      </ul>
+    </li>
+    <li><a href="http://book.realworldhaskell.org/read/">Real World Haskell</a></li>
+    <li><a href="http://www.learnyouahaskell.com/">Learn You a Haskell</a></li>
+    <li>
+      Funktionssuche:
+      <ul>
+	<li><a href="http://holumbus.fh-wedel.de/hayoo/hayoo.html">Hayoo!</a></li>
+	<li><a href="http://www.haskell.org/hoogle/">Hoogle</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Paket-Management mit Cabal</h2>
+  <pre>apt-get install ghc cabal-install
+
+# Updates list of known packages
+cabal update
+
+# Installs package with library profiling
+cabal install -p yesod-platform</pre>
+  <p class="note">Glasgow Haskell Compiler</p>
+  <p class="note">Mit Dependencies</p>
+  <p class="note">-p für Profiling</p>
+</div>
 <!--
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
 -->
@@ -66,7 +98,7 @@ Geplante Agenda, entferne was du in Folien umgesetzt hast.
 </div>
 <div class="slide">
   <h2>Funktionen</h2>
-  <pre>fac :: Integer -> Integer
+  <pre class="sh_haskell">fac :: Integer -> Integer
 fac 1 = 1
 fac n = n * fac (n - 1)
   </pre>
@@ -74,27 +106,142 @@ fac n = n * fac (n - 1)
   <p class="note">-&gt; Impliziert</p>
   <p class="note">Pattern matching des Parameters</p>
   <p class="note">Integer is bignum</p>
+
+  <h2>case</h2>
+  <pre class="sh_haskell">fac' :: Integer -> Integer
+fac' n =
+  case n of
+    1 -&gt; 1
+    _ -&gt; n * fac (n - 1)
+  </pre>
+  <p class="note">Pattern matching</p>
+  <p class="note">Anonyme Variable</p>
 </div>
 <div class="slide">
   <h2>Guards</h2>
-  <pre>fac :: Integer -> Integer
-fac n
+  <pre class="sh_haskell">fac'' :: Integer -> Integer
+fac'' n
     | n &lt;= 1    = 1
     | otherwise = n * fac (n - 1)
   </pre>
   <p class="note">Boolean expression</p>
+
+  <h2>if then else</h2>
+  <pre class="sh_haskell">fac''' :: Integer -> Integer
+fac''' n =
+  if n &lt;= 1
+  then 1
+  else n * fac (n - 1)
+  </pre>
+  <p class="note">Boolean expression</p>
+</div>
+
+<div class="slide">
+  <h2>Listen</h2>
+  <pre class="sh_haskell">$ ghci  <p class="note">REPL</p>
+Prelude> 2 : []
+[2]
+Prelude> 23 : []
+[23]
+Prelude> 23 : 42 : []
+[23,42]
+Prelude> 23 : 42 : 5 : []
+[23,42,5]
+Prelude> :t (:)
+(:) :: a -> [a] -> [a]
+  </pre>
+  <pre class="sh_haskell">Prelude> :t map
+map :: (a -> b) -> [a] -> [b]
+Prelude> :t filter
+filter :: (a -> Bool) -> [a] -> [a]
+Prelude> :t foldl
+foldl :: (a -> b -> a) -> a -> [b] -> a
+  </pre>
+  <p class="note"></p>
+</div>
+
+<div class="slide">
+  <h2>let</h2>
+  <pre class="sh_haskell">fib :: Integer -> Integer
+fib 0 = 0
+fib 1 = 1
+fib n =
+  let r = fib $ n - 1
+      r' = fib $ n - 2
+  in r + r'
+  </pre>
+
+  <h2>where</h2>
+  <pre class="sh_haskell">facs = 1 : go 2
+  where go :: Integer -> [Integer]  <span class="note">“Unterfunktion”</span>
+        go n = n : map (* n) (go $ n + 1)
+
+Prelude> :t facs  <span class="note">Inferred type</span>
+facs :: [Integer]
+Prelude> facs !! 500   <span class="note">Unendlich, lazy</span>
+611288549821546144419320631496946510053040745744399613938399207781308531950094880800353720198603844213369821855051249995665852739761166777440873387784823972024431693541604632490253390402221485016448489094881275898497140756808655499992463957536774753658273522343143352081610678258299859781290947510064133164625417126214683287364306533202043771696934819148200603488701298578593288295101675375228475039194518540926501811512211084741146359555616051391364512171815202852428391973770531819587555590747725222707870915089204322125602187745638954304887403405330317436980872692673627514602895425139803517823839455807896878364709108235036658336397561844224198282288969461157203049314666899393600517284430144216183492154249948251192663554129489210224225335784718743202172831724716080857069568307715110065035130707514179942202121569852186583424945734289322385681601382444331381680307765142985006245859526451817213228740320341074735777885270328149239431528071389670544598095262337701383222299067569757970109034425702794542448640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  </pre>
+  
+  <p class="note">($)</p>
 </div>
 
 <!--
-case
-if
-let/where
 module
 -->
 <div class="slide">
-  <h2>Currying</h2>
+  <h2>Lambdas</h2>
+  <p class="note">Num: Interface für (+), (*)</p>  
+  <pre class="sh_haskell">Prelude> :t (\n -> n + 1)
+(\n -> n + 1) :: Num a => a -> a
+Prelude> (\n -> n + 1) 22
+23
+</pre>
+  <pre class="sh_haskell">Prelude> :t (\a b c -> a * b * c)
+(\a b c -> a * b * c) :: Num a => a -> a -> a -> a
+  </pre>
+  <pre class="sh_haskell">Prelude> :t (\a -> \b -> \c -> a * b * c)
+(\a -> \b -> \c -> a * b * c) :: Num a => a -> a -> a -> a
+  </pre>
+  <p class="note">Umkehrschluß: Currying</p>  
 </div>
-<!-- sections -->
+<div class="slide">
+  <h2>Currying</h2>
+  <pre class="sh_haskell">:t map (\a -> a + 1)
+map (\a -> a + 1) :: Num b => [b] -> [b]
+  </pre>
+
+  <h2>Sections</h2>
+  <pre class="sh_haskell">Prelude> :t (+ 1)
+(+ 1) :: Num a => a -> a
+Prelude> map (+ 1) [1..10]
+[2,3,4,5,6,7,8,9,10,11]
+  </pre>
+</div>
+
+<!-- Types -->
+<div class="slide">
+  <h2>data</h2>
+  <p class="note">Statt NULL-Pointer</p>
+  <pre class="sh_haskell">data Maybe a = Nothing
+             | Just a
+</pre>
+  <pre class="sh_haskell">Prelude> :t Nothing   <span class="note">Constructors</span>
+Nothing :: Maybe a   <span class="note">Passt auf alle a</span>
+Prelude> :t Just
+Just :: a -> Maybe a
+</pre>
+  <pre class="sh_haskell">data [] a = []
+          | a : [a]</pre>
+  <h2>newtype</h2>
+  <pre class="sh_haskell">newtype Name = Name String  <span class="note">Typename = Ctor</span></pre>
+  <ul>
+    <li>Darf nur 1 Feld haben</li>
+    <li>Billig zur Laufzeit</li>
+    <li>Typsicher zur Compile-Zeit</li>
+  </ul>
+</div>
+
+<!-- Classes, instances -->
 
 <!--
 * Monads, Functors, Applicatives (maloi) (30 min)
