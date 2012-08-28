@@ -242,6 +242,28 @@ Just :: a -> Maybe a
 </div>
 
 <!-- Classes, instances -->
+<div class="slide">
+  <h2>Classes &amp; Instances</h2>
+  <pre class="sh_haskell">class Show a where
+  show :: a -> String</pre>
+  <pre class="sh_haskell">instance Show MeinTyp where
+  show (MeinDatum n) = "MeinDatum " ++ show n</pre>
+  <p>Wie <i>interface</i> in Java</p>
+  <pre class="sh_haskell">Prelude> :i Num
+class Num a where
+  (+) :: a -> a -> a
+  (*) :: a -> a -> a
+  (-) :: a -> a -> a
+  negate :: a -> a
+  abs :: a -> a
+  signum :: a -> a
+  fromInteger :: Integer -> a
+  	-- Defined in `GHC.Num'
+instance Num Integer -- Defined in `GHC.Num'
+instance Num Int -- Defined in `GHC.Num'
+instance Num Float -- Defined in `GHC.Float'
+instance Num Double -- Defined in `GHC.Float'</pre>
+</div>
 
 <!--
 * Monads, Functors, Applicatives (maloi) (30 min)
