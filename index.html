@@ -94,7 +94,7 @@ cabal install -p yesod-platform</pre>
 * Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
 -->
 <div class="slide">
-  <h1>Syntax</h2>
+  <h1>Syntax</h1>
 </div>
 <div class="slide">
   <h2>Funktionen</h2>
@@ -184,10 +184,6 @@ Prelude> facs !! 500   <span class="note">Unendlich, lazy</span>
   
   <p class="note">($)</p>
 </div>
-
-<!--
-module
--->
 <div class="slide">
   <h2>Lambdas</h2>
   <p class="note">Num: Interface für (+), (*)</p>  
@@ -263,6 +259,19 @@ instance Num Integer -- Defined in `GHC.Num'
 instance Num Int -- Defined in `GHC.Num'
 instance Num Float -- Defined in `GHC.Float'
 instance Num Double -- Defined in `GHC.Float'</pre>
+</div>
+
+<div class="slide">
+  <h2>Module</h2>
+  <p>Am Beginn von Quellcode-Dateien:</p>
+  <pre class="sh_haskell">module MeinKram where</pre>
+  <pre class="sh_haskell">module Main (main) where
+
+import MainKram
+import qualified Data.Text as T
+
+fnord :: T.Text
+fnord = T.pack "fnord"</pre>
 </div>
 
 <!--
@@ -542,6 +551,7 @@ id [1,2,3]      == [1,2,3]
 * Template Haskell (maloi) (20min)
 * Profiling (astro) (15min)
 * Parallel Haskell (maloi) (10min)
+* Foreign (astro) (5min)
 
 * Yesod:
  * Conduits (astro) (15 min)
