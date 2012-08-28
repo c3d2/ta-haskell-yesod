@@ -48,14 +48,9 @@
   </ul>
   <p>Chaos Computer Club Dresden</p>
   <p>2012-08-29</p>
+  <p class="note">Genesis: 1990</p>
 </div> 
 
-<!--
-Geplante Agenda, entferne was du in Folien umgesetzt hast.
-
-* Intro: (astro) (10 min)
-  * Hayoo/Hoogle
--->
 <div class="slide">
   <h2>Hilfe</h2>
   <ul>
@@ -90,9 +85,6 @@ cabal install -p yesod-platform</pre>
   <p class="note">Mit Dependencies</p>
   <p class="note">-p für Profiling</p>
 </div>
-<!--
-* Syntax, Currying, Typen, Lazyness  (astro)  (min. 30min)
--->
 <div class="slide cover">
   <h1>Syntax</h1>
 </div>
@@ -105,7 +97,7 @@ fac n = n * fac (n - 1)
   <p class="note">Fakultät</p>
   <p class="note">-&gt; Impliziert</p>
   <p class="note">Pattern matching des Parameters</p>
-  <p class="note">Integer is bignum</p>
+  <p class="note">Integer is bignum, Int nicht</p>
 
   <h2>case</h2>
   <pre class="sh_haskell">fac' :: Integer -> Integer
@@ -228,6 +220,9 @@ Just :: a -> Maybe a
 </pre>
   <pre class="sh_haskell">data [] a = []
           | a : [a]</pre>
+  <h2>type</h2>
+  <p>Typ-Alias</p>
+  <pre class="sh_haskell">type String = [Char]
   <h2>newtype</h2>
   <pre class="sh_haskell">newtype Name = Name String  <span class="note">Typename = Ctor</span></pre>
   <ul>
@@ -236,7 +231,32 @@ Just :: a -> Maybe a
     <li>Typsicher zur Compile-Zeit</li>
   </ul>
 </div>
+<div class="slide">
+  <h2>Record-Syntax</h2>
+  <pre class="sh_haskell">data MeinTyp = MeinKonstruktor String Integer
+Prelude> :t MeinKonstruktor 
+MeinKonstruktor :: String -> Integer -> MeinTyp
+</pre>
 
+  <p>
+    Für <b>data</b> &amp; <b>newtype</b>
+    <span class="note">weiterhin mit nur 1 Feld</span>
+  </p>
+  <pre class="sh_haskell">data MeinTyp = MeinKonstruktor {
+                 meinString :: String
+               , meinInteger :: Integer
+               }
+<span class="note">-- Lesbare Konstruktion</span>
+fnord = MeinKonstruktor {
+          meinString = "fnord"
+        , meinInteger = 23
+        }</pre>
+  <pre class="sh_haskell">Prelude> :t meinString  <span class="note">Accessor</span>
+meinString :: MeinTyp -> String
+Prelude> :t meinInteger
+meinInteger :: MeinTyp -> Integer
+Prelude> meinInteger fnord
+23</div>
 <!-- Classes, instances -->
 <div class="slide">
   <h2>Classes &amp; Instances</h2>
@@ -259,6 +279,31 @@ instance Num Integer -- Defined in `GHC.Num'
 instance Num Int -- Defined in `GHC.Num'
 instance Num Float -- Defined in `GHC.Float'
 instance Num Double -- Defined in `GHC.Float'</pre>
+</div>
+<div class="slide">
+  <h2>deriving</h2>
+  <section style="-moz-column-count: 2; -webkit-column-count: 2">
+    <p>Funktioniert mit grundlegenden Datentypen:</p>
+    <pre class="sh_haskell">class Eq a where
+  (==) :: a -> a -> Bool
+  (/=) :: a -> a -> Bool</pre>
+    <pre class="sh_haskell">class Eq a => Ord a where
+  compare :: a -> a -> Ordering</pre>
+    <pre class="sh_haskell">class Enum a where
+  succ :: a -> a
+  pred :: a -> a</pre>
+    <pre class="sh_haskell">class Bounded a where
+  minBound :: a
+  maxBound :: a</pre>
+    <pre class="sh_haskell">class Show a where
+  show :: a -> String</pre>
+    <pre class="sh_haskell">read :: Read a => String -> a 	-- Defined in `Text.Read'</pre>
+    <p>Anwendungsbeispiel:</p>
+    <pre class="sh_haskell">Prelude> newtype Zeigbar =
+  Zeig String deriving Show
+Prelude> putStrLn $ show $ Zeig "Hello"
+Zeig "Hello"</pre>
+  </section>
 </div>
 
 <div class="slide">
