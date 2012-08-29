@@ -594,6 +594,71 @@ id [1,2,3]      == [1,2,3]
     </li>
   </ul>
 </div>
+<div class="slide">
+  <h2>Applicative - Motivation</h2>
+  <ul class="incremental">
+    <li>
+    <p>fmap <strong>liftet</strong> eine (normale) Funktion zu einer Funktion, die in einem Kontext verwendet werden kann</p>
+    <p>Man kann aber mit fmap keine Funktion, die selbst in einem Kontext liegt, auf Werte in einem Kontext anwenden</p>
+    </li>
+    <li>
+    <p>Z.B. kann man mit fmap keine Liste von Funktionen auf eine Liste von Werten anwenden</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude> fmap [(+1), (+2)] [0,0]
+
+<interactive>:2:6:
+    Couldn't match expected type `a0 -> b0' with actual type `[t0]'
+    In the first argument of `fmap', namely `[(+ 1), (+ 2)]'
+    In the expression: fmap [(+ 1), (+ 2)] [0, 0]
+    In an equation for `it': it = fmap [(+ 1), (+ 2)] [0, 0]
+</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Applicative - Motivation</h2>
+  <ul class="incremental">
+    <li>
+    <p>fmap <strong>liftet</strong> eine (normale) Funktion zu einer Funktion, die in einem Kontext verwendet werden kann</p>
+    <p>Man kann aber mit fmap keine Funktion, die selbst in einem Kontext liegt, auf Werte in einem Kontext anwenden</p>
+    </li>
+    <li>
+    <p>Z.B. kann man mit fmap keine Liste von Funktionen auf eine Liste von Werten anwenden</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude> fmap [(+1), (+2)] [0,0]
+
+<interactive>:2:6:
+    Couldn't match expected type `a0 -> b0' with actual type `[t0]'
+    In the first argument of `fmap', namely `[(+ 1), (+ 2)]'
+    In the expression: fmap [(+ 1), (+ 2)] [0, 0]
+    In an equation for `it': it = fmap [(+ 1), (+ 2)] [0, 0]
+</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h2>Functor - the easy type class</h2>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">class Functor f => Applicative f where
+  pure  :: a -> f a
+  (<*>) :: f (a -> b) -> f a -> f b</pre>
+    </li>
+    <li>
+      <h3>Intuition<h3>
+    </li>
+    <li>
+    <p>Ein Functor stellt eine Art <strong>Container</strong> dar, der es ermoeglicht (mit fmap) eine Funktion (uniform) auf alle Elemente in diesem Container anzuwenden</p>
+    </li>
+    <li>
+      <p>Alternativ dazu kann man Functor auch als einen <strong>computational context</strong> sehen und fmap wendet eine Funktion auf einen Wert in einem Kontext an ohne diesen Kontext zu aendern</p>
+    </li>
+  </ul>
+</div>
 <!--
 * Combinatoric Parsing: Attoparsec (astro) (15 min)
 * Template Haskell (maloi) (20min)
