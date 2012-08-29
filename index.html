@@ -233,7 +233,7 @@ Just :: a -> Maybe a
           | a : [a]</pre>
   <h2>type</h2>
   <p>Typ-Alias</p>
-  <pre class="sh_haskell">type String = [Char]
+  <pre class="sh_haskell">type String = [Char]</pre>
   <h2>newtype</h2>
   <pre class="sh_haskell">newtype Name = Name String  <span class="note">Typename = Ctor</span></pre>
   <ul>
@@ -713,8 +713,8 @@ parseCSV input = parse csvFile "(unknown)" input
 -->
 <div class="slide">
   <h1>Profiling</h1>
-  <p>Beispiel aus Real World Haskell, Chapter 25:</p>
-  <div>
+  <p class="incremental">Beispiel aus Real World Haskell, Chapter 25:</p>
+  <div class="incremental">
     <pre class="sh_haskell">import System.Environment
 import Text.Printf
 
