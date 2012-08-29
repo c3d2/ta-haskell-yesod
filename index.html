@@ -610,26 +610,49 @@ id [1,2,3]      == [1,2,3]
   <ul class="incremental">
     <li>
     <p>fmap <strong>liftet</strong> eine (normale) Funktion zu einer Funktion, die in einem Kontext verwendet werden kann</p>
-    <p>Man kann aber mit fmap keine Funktion, die selbst in einem Kontext liegt, auf Werte in einem Kontext anwenden</p>
     </li>
     <li>
-    <p>Z.B. kann man mit fmap keine Liste von Funktionen auf eine Liste von Werten anwenden</p>
+    <p>Auch fmap unterliegt natuerlich wie jede andere Funktion <strong>currying/partial application</strong></p>
+    <pre class="sh_haskell">$ ghci
+Prelude> :t fmap (+) (Just 2)
+fmap (+) (Just 2) :: Num a => Maybe (a -> a)
+</pre>
     </li>
-    <li style="list-style-type: none;">
+    <li>
+    <p>Man kann aber mit fmap keine Funktion, die selbst in einem Kontext liegt, auf Werte in einem Kontext anwenden</p>
       <pre class="sh_haskell">$ ghci
-Prelude> fmap [(+1), (+2)] [0,0]
-
-<interactive>:2:6:
-    Couldn't match expected type `a0 -> b0' with actual type `[t0]'
-    In the first argument of `fmap', namely `[(+ 1), (+ 2)]'
-    In the expression: fmap [(+ 1), (+ 2)] [0, 0]
-    In an equation for `it': it = fmap [(+ 1), (+ 2)] [0, 0]
+Prelude> fmap Just (+) Just 5
+<interactive>:9:6:
+    Couldn't match expected type `t1 -> t0' with actual type `Maybe a0'
 </pre>
     </li>
   </ul>
 </div>
 <div class="slide">
-  <h1>Functor - the easy type class</h1>
+  <h1>Applicative - Intuition incoming</h1>
+  <ul class="incremental">
+    <li>
+    <p><strong>[[ g x1 x2 ... xn ]]</strong> soll eine Notation fuer eine Funktionsapplikation in einem Kontext sein</p>
+    </li>
+    <li>
+    <p><strong>g</strong> sei nun vom Typ <strong>t1 -> t2 -> ... -> tn -> t</strong> und <strong>xi</strong> vom Typ <strong>f ti</strong> dann ist <strong>[[ g x1 x2 ... xn ]]</strong> vom Typ <strong>f t</strong> wobei f ein Functor ist</p>
+    </li>
+    <li>
+    <p>Das kann man sich als Funktionsapplikation auf mehrere <strong>moeglicherweise seiteneffekt habende</strong> Argumente vorstellen</p>
+    </li>
+    <li>
+    <p>Das ist eine Generalisierung von fmap, die ja nur auf ein einzelnes Argument in einem Kontext angewendet werden kann</p>
+    </li>
+    <li>
+    <p>Wendet man g auf x1 an bekommen wir eine Funktion f (t2 -> ... -> t)</p>
+    </li>
+    <li>
+    <p>Diese Funktion kann aber mit fmap nicht auf das naechste Argument angewendet werden - !#*"§"$</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Applicative - let me handle it</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">class Functor f => Applicative f where
@@ -637,13 +660,82 @@ Prelude> fmap [(+1), (+2)] [0,0]
   (<*>) :: f (a -> b) -> f a -> f b</pre>
     </li>
     <li>
-      <h3>Intuition<h3>
+    <p>Oha - <*> erlaubt uns also jetzt <strong>[[ g x1 x2 ... xn ]]</strong> in Haskell umzusetzen</p>
+      <pre class="sh_haskell">g <$> x1 <*> x2 <*> ... <*> xn -- <$> = fmap</pre>
     </li>
     <li>
-    <p>Ein Functor stellt eine Art <strong>Container</strong> dar, der es ermoeglicht (mit fmap) eine Funktion (uniform) auf alle Elemente in diesem Container anzuwenden</p>
+    <p>Na das sieht doch aus wie normale Funktionsapplikation</p>
     </li>
     <li>
-      <p>Alternativ dazu kann man Functor auch als einen <strong>computational context</strong> sehen und fmap wendet eine Funktion auf einen Wert in einem Kontext an ohne diesen Kontext zu aendern</p>
+    <p><strong>Applicative Programming with Effects</strong></p>
+    </li>
+    <li>
+    <p><strong>pure</strong> nimmt ein Argument beliebigen Typs und packt es in einen default Container oder einen effektfreien Kontext</p>
+    </li>
+    <li>
+    <p>Damit lassen sich auch effektfreie Argumente inmitten diese Berechnung einbauen</p>
+      <pre class="sh_haskell">g <$> x1 <*> pure x2 <*> x3</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Applicative - Liste</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Applicative [] where
+  pure x    = [x]
+  gs <*> xs = [ g x | g <- gs, x <- xs ]</pre>
+    </li>
+    <li>
+    <p>Wende jede Funktion der ersten Liste auf jedes Element der zweiten Liste an</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude Control.Applicative> (+) <$> [2,3,4] <*> pure 4
+[6,7,8]
+</pre>
+      <pre class="sh_haskell">$ ghci
+Prelude Control.Applicative> (*) <$> [7,8,9] <*> [1,2]
+[7,14,8,16,9,18]
+</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Applicative - Liste</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">newtype ZipList a = ZipList { getZipList :: [a] } -- pro Datentyp nur eine Instanz einer Typklasse</pre>
+    </li>
+    <li>
+    <p>Elementweise Applikation - die Listen werden zusammen gezipped</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">instance Applicative ZipList where
+  pure = ZipList (repeat x)
+  (ZipList gs) <*> (ZipList xs) = ZipList (zipWith ($) gs xs)</pre>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">$ ghci
+Prelude Control.Applicative> getZipList $ (mod) <$> ZipList [9,27,56] <*> ZipList [1..10]
+[0,1,2]
+</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Applicative - Gesetze</h1>
+  <ul class="incremental">
+    <li>
+    <p>Es gibt mehre Gesetze aber wichtig fuer das Verstaendnis ist nur eins:</p>
+    <p>Wie haengt Applicative mit Functor zusammen?</p>
+    </li>
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">fmap g x = pure g <*> x</pre>
+    <p>Eine normale Funktion die ueber einen Kontext x gemapped wird ist aequivalent dazu diese Funktion in den Kontext zu liften und sie dann mit <*> auf x anzuwenden</p>
+    </li>
+    <li>
+    <p>Die restlichen Gesetze sichern nur, dass sich pure so verhaelt wie man es erwartet</p>
     </li>
   </ul>
 </div>
