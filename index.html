@@ -52,7 +52,7 @@
 </div> 
 
 <div class="slide">
-  <h2>Hilfe</h2>
+  <h1>Hilfe</h1>
   <ul>
     <li>
       haskell.org
@@ -73,7 +73,7 @@
   </ul>
 </div>
 <div class="slide">
-  <h2>Paket-Management mit Cabal</h2>
+  <h1>Paket-Management mit Cabal</h1>
   <pre>apt-get install ghc ghc-prof cabal-install
 
 # Updates list of known packages
@@ -90,7 +90,7 @@ cabal install -p yesod-platform</pre>
   <h1>Syntax</h1>
 </div>
 <div class="slide">
-  <h2>Funktionen</h2>
+  <h1>Funktionen</h1>
   <pre class="sh_haskell">fac :: Integer -> Integer
 fac 1 = 1
 fac n = n * fac (n - 1)
@@ -100,7 +100,7 @@ fac n = n * fac (n - 1)
   <p class="note">Pattern matching des Parameters</p>
   <p class="note">Integer is bignum, Int nicht</p>
 
-  <h2>case</h2>
+  <h1>case</h1>
   <pre class="sh_haskell">fac' :: Integer -> Integer
 fac' n =
   case n of
@@ -111,7 +111,7 @@ fac' n =
   <p class="note">Anonyme Variable</p>
 </div>
 <div class="slide">
-  <h2>Guards</h2>
+  <h1>Guards</h1>
   <pre class="sh_haskell">fac'' :: Integer -> Integer
 fac'' n
     | n &lt;= 1    = 1
@@ -119,7 +119,7 @@ fac'' n
   </pre>
   <p class="note">Boolean expression</p>
 
-  <h2>if then else</h2>
+  <h1>if then else</h1>
   <pre class="sh_haskell">fac''' :: Integer -> Integer
 fac''' n =
   if n &lt;= 1
@@ -130,7 +130,7 @@ fac''' n =
 </div>
 
 <div class="slide">
-  <h2>Listen</h2>
+  <h1>Listen</h1>
   <pre class="sh_haskell">$ ghci  <p class="note">REPL</p>
 Prelude> 2 : []
 [2]
@@ -154,7 +154,7 @@ foldl :: (a -> b -> a) -> a -> [b] -> a
 </div>
 
 <div class="slide">
-  <h2>let</h2>
+  <h1>let</h1>
   <pre class="sh_haskell">fib :: Integer -> Integer
 fib 0 = 0
 fib 1 = 1
@@ -164,7 +164,7 @@ fib n =
   in r + r'
   </pre>
 
-  <h2>where</h2>
+  <h1>where</h1>
   <pre class="sh_haskell">facs = 1 : go 2
   where go :: Integer -> [Integer]  <span class="note">“Unterfunktion”</span>
         go n = n : map (* n) (go $ n + 1)
@@ -178,7 +178,7 @@ Prelude> facs !! 500   <span class="note">Unendlich, lazy</span>
   <p class="note">($)</p>
 </div>
 <div class="slide">
-  <h2>Lambdas</h2>
+  <h1>Lambdas</h1>
   <p class="note">Num: Interface für (+), (*)</p>  
   <pre class="sh_haskell">Prelude> :t (\n -> n + 1)
 (\n -> n + 1) :: Num a => a -> a
@@ -194,12 +194,12 @@ Prelude> (\n -> n + 1) 22
   <p class="note">Umkehrschluß: Currying</p>  
 </div>
 <div class="slide">
-  <h2>Currying</h2>
+  <h1>Currying</h1>
   <pre class="sh_haskell">:t map (\a -> a + 1)
 map (\a -> a + 1) :: Num b => [b] -> [b]
   </pre>
 
-  <h2>Sections</h2>
+  <h1>Sections</h1>
   <pre class="sh_haskell">Prelude> :t (+ 1)
 (+ 1) :: Num a => a -> a
 Prelude> map (+ 1) [1..10]
@@ -207,7 +207,7 @@ Prelude> map (+ 1) [1..10]
   </pre>
 </div>
 <div class="slide">
-  <h2>Function Composition</h2>
+  <h1>Function Composition</h1>
   <pre class="sh_haskell">Prelude> :i (.)
 (.) :: (b -> c) -> (a -> b) -> a -> c 	-- Defined in `GHC.Base'
 infixr 9 .
@@ -219,7 +219,7 @@ Prelude> ((+ 5) . (* 3)) 23
 
 <!-- Types -->
 <div class="slide">
-  <h2>data</h2>
+  <h1>data</h1>
   <p class="note">Statt NULL-Pointer</p>
   <pre class="sh_haskell">data Maybe a = Nothing
              | Just a
@@ -231,10 +231,10 @@ Just :: a -> Maybe a
 </pre>
   <pre class="sh_haskell">data [] a = []
           | a : [a]</pre>
-  <h2>type</h2>
+  <h1>type</h1>
   <p>Typ-Alias</p>
   <pre class="sh_haskell">type String = [Char]</pre>
-  <h2>newtype</h2>
+  <h1>newtype</h1>
   <pre class="sh_haskell">newtype Name = Name String  <span class="note">Typename = Ctor</span></pre>
   <ul>
     <li>Darf nur 1 Feld haben</li>
@@ -243,7 +243,7 @@ Just :: a -> Maybe a
   </ul>
 </div>
 <div class="slide">
-  <h2>Record-Syntax</h2>
+  <h1>Record-Syntax</h1>
   <pre class="sh_haskell">data MeinTyp = MeinKonstruktor String Integer
 Prelude> :t MeinKonstruktor 
 MeinKonstruktor :: String -> Integer -> MeinTyp
@@ -270,7 +270,7 @@ Prelude> meinInteger fnord
 23</div>
 <!-- Classes, instances -->
 <div class="slide">
-  <h2>Classes &amp; Instances</h2>
+  <h1>Classes &amp; Instances</h1>
   <pre class="sh_haskell">class Show a where
   show :: a -> String</pre>
   <pre class="sh_haskell">instance Show MeinTyp where
@@ -292,7 +292,7 @@ instance Num Float -- Defined in `GHC.Float'
 instance Num Double -- Defined in `GHC.Float'</pre>
 </div>
 <div class="slide">
-  <h2>deriving</h2>
+  <h1>deriving</h1>
   <section style="-moz-column-count: 2; -webkit-column-count: 2">
     <p>Funktioniert mit grundlegenden Datentypen:</p>
     <pre class="sh_haskell">class Eq a where
@@ -318,7 +318,7 @@ Zeig "Hello"</pre>
 </div>
 
 <div class="slide">
-  <h2>Module</h2>
+  <h1>Module</h1>
   <p>Am Beginn von Quellcode-Dateien:</p>
   <pre class="sh_haskell">module MeinKram where</pre>
   <pre class="sh_haskell" style="margin-top: 6em">module Main (main) where
@@ -337,7 +337,7 @@ fnord = T.pack "fnord"</pre>
   <h1>Functor, Applicative, Monad</h1>
 </div>
 <div class="slide">
-  <h2>Functors - Motivation</h2>
+  <h1>Functors - Motivation</h1>
   <ul class="incremental">
     <li>
       <p>Eine Funktion, die jeder liebt:</p>
@@ -356,7 +356,7 @@ fnord = T.pack "fnord"</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functors - Motivation (2)</h2>
+  <h1>Functors - Motivation (2)</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">map      :: (a -> b) -> []    a -> []    b</pre>
@@ -375,7 +375,7 @@ fnord = T.pack "fnord"</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Kinds: Typen von Typen - WTF?</h2>
+  <h1>Kinds: Typen von Typen - WTF?</h1>
   <ul class="incremental">
     <li>
       <p>In Haskell hat jeder Ausdruck einen Typ</p>
@@ -394,7 +394,7 @@ fnord = T.pack "fnord"</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Kinds: Beispiele</h2>
+  <h1>Kinds: Beispiele</h1>
   <ul class="incremental">
     <li>
       <p>Monomorph</p>
@@ -416,7 +416,7 @@ Funny :: (* -> *) -> * -> *</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functors redux</h2>
+  <h1>Functors redux</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">map      :: (a -> b) -> []    a -> []    b</pre>
@@ -439,7 +439,7 @@ Funny :: (* -> *) -> * -> *</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - the easy type class</h2>
+  <h1>Functor - the easy type class</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">class Functor f where
@@ -457,7 +457,7 @@ Funny :: (* -> *) -> * -> *</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - Kind is kind of important</h2>
+  <h1>Functor - Kind is kind of important</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">instance Functor Int where
@@ -481,7 +481,7 @@ Funny :: (* -> *) -> * -> *</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - Listen </h2>
+  <h1>Functor - Listen </h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">instance Functor [] where
@@ -505,7 +505,7 @@ Prelude> fmap (+1) [1,2,3]
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - Maybe baby </h2>
+  <h1>Functor - Maybe baby </h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">instance Functor Maybe where
@@ -528,7 +528,7 @@ Nothing</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - Do you read me? </h2>
+  <h1>Functor - Do you read me? </h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">instance Functor ((->) r) where
@@ -562,7 +562,7 @@ True</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - Sin is lawlessness </h2>
+  <h1>Functor - Sin is lawlessness </h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">1. fmap id = id -- id = (\x -> x) und damit id :: a -> a
@@ -580,7 +580,7 @@ True</pre>
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - I break the law </h2>
+  <h1>Functor - I break the law </h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">instance Functor [] where
@@ -606,7 +606,7 @@ id [1,2,3]      == [1,2,3]
   </ul>
 </div>
 <div class="slide">
-  <h2>Applicative - Motivation</h2>
+  <h1>Applicative - Motivation</h1>
   <ul class="incremental">
     <li>
     <p>fmap <strong>liftet</strong> eine (normale) Funktion zu einer Funktion, die in einem Kontext verwendet werden kann</p>
@@ -629,7 +629,7 @@ Prelude> fmap [(+1), (+2)] [0,0]
   </ul>
 </div>
 <div class="slide">
-  <h2>Functor - the easy type class</h2>
+  <h1>Functor - the easy type class</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">class Functor f => Applicative f where
@@ -648,7 +648,7 @@ Prelude> fmap [(+1), (+2)] [0,0]
   </ul>
 </div>
 <div class="slide">
-  <h2>Real World Haskell, Chapter 16: Parsec</h2>
+  <h1>Real World Haskell, Chapter 16: Parsec</h1>
   <pre class="sh_haskell">import Text.ParserCombinators.Parsec
 
 {- A CSV file contains 0 or more lines, each of which is terminated
@@ -696,7 +696,7 @@ parseCSV :: String -> Either ParseError [[String]]
 parseCSV input = parse csvFile "(unknown)" input</pre>
 </div>
 <div class="slide">
-  <h2>Real World Haskell, Chapter 16: Parsec</h2>
+  <h1>Real World Haskell, Chapter 16: Parsec</h1>
   <pre class="sh_haskell">import Text.ParserCombinators.Parsec
 
 csvFile = endBy line eol
@@ -739,7 +739,7 @@ zsh: killed     ./prof1 1e8
 ./prof1 1e8  6.72s user 2.71s system 91% cpu 10.368 total</pre>
 </div>
 <div class="slide">
-  <h2>Time Profiling</h2>
+  <h1>Time Profiling</h1>
   <pre>% ghc --make -O2 -prof -caf-all -auto-all prof1
 % ./prof1 1e7 +RTS -p  <span class="note">-P, -pa</span>
 5000000.5
@@ -775,21 +775,21 @@ MAIN        MAIN                     55           0    0.0    0.0   100.0  100.0
  CAF        GHC.IO.Encoding.Iconv    82           0    0.0    0.0     0.0    0.0</pre>
 </div>
 <div class="slide">
-  <h2>Space Profiling</h2>
+  <h1>Space Profiling</h1>
   <pre>% ghc --make -rtsopts -prof -caf-all -auto-all prof1
 % ./prof1 1e6 +RTS -K256M -hc -i0.01
 % hp2ps -c prof1.hp</pre>
   <img src="prof1-hc.svg"/>
 </div>
 <div class="slide">
-  <h2>Space Profiling</h2>
+  <h1>Space Profiling</h1>
   <pre>% ./prof1 1e6 +RTS -K256M -hy -i0.01
 % hp2ps -c prof1.hp</pre>
   <img src="prof1-hy.svg"/>
   <p class="note">Auch: GHC Core output</p>
 </div>
 <div class="slide">
-  <h2>Strictness</h2>
+  <h1>Strictness</h1>
   <pre class="sh_haskell">import System.Environment
 import Text.Printf
 import Data.List (foldl')
@@ -841,7 +841,7 @@ mean xs = s / fromIntegral n
   <p class="note">Gegen unkontrollierte Lazyness</p>
 </div>
 <div class="slide">
-  <h2>ResourceT m a</h2>
+  <h1>ResourceT m a</h1>
 <pre class="sh_haskell">Control.Monad.Trans.Resource> :i MonadResource
 class (MonadThrow m, MonadUnsafeIO m,
        Control.Monad.IO.Class.MonadIO m,
@@ -857,7 +857,7 @@ class (MonadThrow m, MonadUnsafeIO m,
 </div>
 
 <div class="slide">
-  <h2>Pipe Type</h2>
+  <h1>Pipe Type</h1>
 <pre class="sh_haskell">Data.Conduit> :i Pipe
 data Pipe l i o u m r
   = Data.Conduit.Internal.HaveOutput (Pipe l i o u m r) (m ()) o
@@ -877,7 +877,7 @@ type Sink i m r = Pipe i i Data.Void.Void () m r</pre>
 </pre>
 </div>
 <div class="slide">
-  <h2>Conduit Operators</h2>
+  <h1>Conduit Operators</h1>
 <pre class="sh_haskell">Data.Conduit> :i ($$)
 ($$) :: Monad m => Source m a -> Sink a m b -> m b
 infixr 0 $$</pre>
@@ -892,7 +892,7 @@ infixl 1 $=</pre>
 infixr 2 =$</pre>
 </div>
 <div class="slide">
-  <h2>Beispiel: cp</h2>
+  <h1>Beispiel: cp</h1>
 <pre class="sh_haskell">module Main (main) where
 
 import Data.Conduit
@@ -907,7 +907,7 @@ main = getArgs >>= \[src, dest] ->
        copyFile src dest</pre>
 </div>
 <div class="slide">
-  <h2>Beispiel: Bytes zählen</h2>
+  <h1>Beispiel: Bytes zählen</h1>
   <pre class="sh_haskell">{-# LANGUAGE BangPatterns #-}
 module Main (main) where
 
@@ -944,7 +944,7 @@ countBytes =
              in loop 0</pre>
 </div>
 <div class="slide">
-  <h2>WAI: Web Application Interface</h2>
+  <h1>WAI: Web Application Interface</h1>
   <pre class="sh_haskell">Network.Wai> :i Application
 type Application =
   Request -> ResourceT IO Response</pre>
@@ -956,7 +956,7 @@ Network.Wai.Middleware.Gzip> :t gzip
 gzip :: GzipSettings -> Network.Wai.Middleware</div>
 </div>
 <div class="slide">
-  <h2>WAI Request &amp; Response</h2>
+  <h1>WAI Request &amp; Response</h1>
   <pre class="sh_haskell">Prelude Network.Wai> :i Request
 data Request
   = Request {requestMethod :: Method,
@@ -979,7 +979,8 @@ data Response
   | ResponseSource Status ResponseHeaders (Source (ResourceT IO) (Flush Builder))</pre>
 </div>
 <div class="slide">
-  <h2>WAI: Motivation</h2>
+  <h1>WAI: Motivation</h1>
+  <p>Einheit: Requests/second</p>
   <img src="preliminary-warp-cross-language-benchmarks.png"/>
   <p>
     <a href="http://www.yesodweb.com/blog/2011/03/preliminary-warp-cross-language-benchmarks">www.yesodweb.com/blog/2011/03/preliminary-warp-cross-language-benchmarks</a>
