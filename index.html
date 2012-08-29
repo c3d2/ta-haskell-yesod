@@ -834,7 +834,116 @@ mean xs = s / fromIntegral n
 <!--
 * Parallel Haskell (maloi) (10min)
 * Foreign (astro) (5min)
+-->
+<div class="slide cover">
+  <h1>Strictness</h1>
+  <p class="note">Stream processing</p>
+  <p class="note">Gegen unkontrollierte Lazyness</p>
+</div>
+<div class="slide">
+  <h2>ResourceT m a</h2>
+<pre class="sh_haskell">Control.Monad.Trans.Resource> :i MonadResource
+class (MonadThrow m, MonadUnsafeIO m,
+       Control.Monad.IO.Class.MonadIO m,
+       Control.Applicative.Applicative m) => MonadResource m where
+  register :: IO () -> m ReleaseKey
+  release :: ReleaseKey -> m ()
+  allocate :: IO a -> (a -> IO ()) -> m (ReleaseKey, a)
+  resourceMask ::
+    ((forall a. ResourceT IO a -> ResourceT IO a) -> ResourceT IO b)
+    -> m b
+  	-- Defined in `Control.Monad.Trans.Resource'
+</pre>
+</div>
 
+<div class="slide">
+  <h2>Pipe Type</h2>
+<pre class="sh_haskell">Data.Conduit> :i Pipe
+data Pipe l i o u m r
+  = Data.Conduit.Internal.HaveOutput (Pipe l i o u m r) (m ()) o
+  | Data.Conduit.Internal.NeedInput (i -> Pipe l i o u m r)
+                                    (u -> Pipe l i o u m r)
+  | Data.Conduit.Internal.Done r
+  | Data.Conduit.Internal.PipeM (m (Pipe l i o u m r))
+  | Data.Conduit.Internal.Leftover (Pipe l i o u m r) l
+instance Monad m => Monad (Pipe l i o u m)
+instance Monad m => Functor (Pipe l i o u m)</pre>
+<pre class="sh_haskell">Data.Conduit> :i Conduit
+type Conduit i m o = Pipe i i o () m ()</pre>
+<pre class="sh_haskell">Data.Conduit> :i Source
+type Source m o = Pipe () () o () m ()</pre>
+<pre class="sh_haskell">Data.Conduit> :i Sink
+type Sink i m r = Pipe i i Data.Void.Void () m r</pre>
+</pre>
+</div>
+<div class="slide">
+  <h2>Conduit Operators</h2>
+<pre class="sh_haskell">Data.Conduit> :i ($$)
+($$) :: Monad m => Source m a -> Sink a m b -> m b
+infixr 0 $$</pre>
+<pre class="sh_haskell">Data.Conduit> :i (=$=)
+(=$=) :: Monad m => Conduit a m b -> Conduit b m c -> Conduit a m c
+infixr 2 =$=</pre>
+<pre class="sh_haskell">Data.Conduit> :i ($=)
+($=) :: Monad m => Source m a -> Conduit a m b -> Source m b
+infixl 1 $=</pre>
+<pre class="sh_haskell">Data.Conduit> :i (=$)
+(=$) :: Monad m => Conduit a m b -> Sink b m c -> Sink a m c
+infixr 2 =$</pre>
+</div>
+<div class="slide">
+  <h2>Beispiel: cp</h2>
+<pre class="sh_haskell">module Main (main) where
+
+import Data.Conduit
+import qualified Data.Conduit.Binary as CB
+import System.Environment (getArgs)
+
+
+copyFile :: FilePath -> FilePath -> IO ()
+copyFile src dest = runResourceT $ CB.sourceFile src $$ CB.sinkFile dest
+
+main = getArgs >>= \[src, dest] ->
+       copyFile src dest</pre>
+</div>
+<div class="slide">
+  <h2>Beispiel: Bytes zählen</h2>
+  <pre class="sh_haskell">{-# LANGUAGE BangPatterns #-}
+module Main (main) where
+
+import Data.Conduit
+import qualified Data.Conduit.Binary as CB
+import System.Environment (getArgs)
+import Control.Monad.Trans
+import qualified Data.ByteString as B
+
+                
+copyFile :: FilePath -> FilePath -> IO ()
+copyFile src dest = runResourceT $
+                    CB.sourceFile src $=
+                    countBytes $$ 
+                    CB.sinkFile dest
+
+main = getArgs >>= \[src, dest] ->
+       copyFile src dest
+
+countBytes :: MonadIO m => Conduit B.ByteString m B.ByteString
+countBytes = 
+    let loop !total = 
+            do mBuf &lt;- await
+               case mBuf of
+                 Just buf -> 
+                     do yield buf
+                        loop $ total + B.length buf
+                 Nothing ->
+                     do liftIO $ putStrLn $ 
+                          "Transferred " ++ 
+                          show total ++ 
+                          " bytes"
+                        return ()
+             in loop 0</pre>
+</div>
+<!--
 * Yesod:
  * Conduits (astro) (15 min)
    * 
