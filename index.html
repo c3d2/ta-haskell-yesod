@@ -835,6 +835,85 @@ Prelude Control.Applicative> getZipList $ (mod) <$> ZipList [9,27,56] <*> ZipLis
   </ul>
 </div>
 <div class="slide">
+  <h1>Monad - Maybe a monad</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+    <pre class="sh_haskell">instance Monad Maybe where
+  return = Just
+  (Just x) >>= g = g x
+  Nothing  >>= _ = Nothing</pre>
+    </li>
+    <li>
+    <p>Sobald die erste Berechnung fehlschlaegt, schlaegt die gesamte Berechnung fehl</p>
+    </li>
+    <li style="list-style-type: none;">
+    <pre class="sh_haskell">data Dude = Dude { name, favDrink, favLang :: String } deriving Show
+
+isCool :: Dude -> Maybe Dude
+isCool d
+    | favLang d == "Haskell" = Just d
+    | otherwise              = Nothing
+
+isHip :: Dude -> Maybe Dude
+isHip d
+    | favDrink d == "Club Mate" = Just d
+    | otherwise                 = Nothing
+
+spj = Dude "Simon P. J."      "Club Mate" "Haskell"
+srd = Dude "Some Random Dude" "Club Mate" "PHP"
+
+tuersteher :: Dude -> Maybe Dude
+tuersteher d = return d >>= isCool >>= isHip -- isCool d >>= isHip</pre>
+    <pre class="sh_haskell">$ghci
+*Main> tuersteher spj
+Just (Dude {name = "Simon P. J.", favDrink = "Club Mate", favLang = "Haskell"})
+*Main> tuersteher srd
+Nothing
+</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - I never try anything, I just do it</h1>
+  <ul class="incremental">
+    <li>
+    <p>Haskell bietet eine spezielle Notation an um aehnlich wie in imperativen Sprachen zu programmieren - <strong>Do</strong></p>
+    </li>
+    <li style="list-style-type: none;">
+    <pre class="sh_haskell">a >>= \x -> b >> c >>= \y -> d</pre>
+    <pre class="sh_haskell">a >>= \x -> -- x bindet das Ergebnis von a
+b >>
+c >>= \y -> -- y bindet das Ergebnis von c
+d</pre>
+    <p>b,c und d duerfen auf x zugreifen, und d darf auch auf y zugreifen</p>
+    </li>
+    <li>
+    <p>In Zucker gegossen sieht das so aus:</p>
+    <pre class="sh_haskell">do { x <- a ; -- die ; sind optional
+     b      ;
+     y <- c ;
+     d
+   }</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - Lawl</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+    <pre class="sh_haskell">return a >>= k  =  k a
+m >>= return    =  m
+m >>= (\x -> k x >>= h)  =  (m >>= k) >>= h
+ 
+fmap f xs  =  xs >>= return . f  =  liftM f xs</pre>
+    <p>Das erste und zweite Gesetz sichert, dass return sich benimmt</p>
+    <p>Das dritte Gesetz sichert eine Art Assoziativitaet</p>
+    <p>Das vierte besagt, dass fmap und liftM das selbe sind fuer Typen, die gleichzeitig Monad und Functor sind</p>
+    <p>liftM :: Monad m => (a -> b) -> m a -> m b und ist das selbe wie fmap ist. Wir haben beide, weil die Monad Typklasse keine Functor Instanz verlangt</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
   <h1>Real World Haskell, Chapter 16: Parsec</h1>
   <pre class="sh_haskell">import Text.ParserCombinators.Parsec
 
