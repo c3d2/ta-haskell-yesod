@@ -96,7 +96,7 @@ fac 1 = 1
 fac n = n * fac (n - 1)
   </pre>
   <p class="note">Fakultät</p>
-  <p class="note">-&gt; Impliziert</p>
+  <p class="note">-&gt; Implikation, rechtsassoziativ</p>
   <p class="note">Pattern matching des Parameters</p>
   <p class="note">Integer is bignum, Int nicht</p>
 
@@ -150,7 +150,7 @@ filter :: (a -> Bool) -> [a] -> [a]
 Prelude> :t foldl
 foldl :: (a -> b -> a) -> a -> [b] -> a
   </pre>
-  <p class="note"></p>
+  <p class="note">Zeige mehr containers</p>
 </div>
 
 <div class="slide">
@@ -328,6 +328,22 @@ import qualified Data.Text as T
 
 fnord :: T.Text
 fnord = T.pack "fnord"</pre>
+</div>
+<div class="slide">
+  <h1>Operator-Schreibweise</h1>
+  <pre class="sh_haskell">Prelude> :i (+)
+class Num a where
+  (+) :: a -> a -> a
+infixl 6 +
+Prelude> :i (/)
+class Num a => Fractional a where
+  (/) :: a -> a -> a
+infixl 7 /
+Prelude> :i (^)
+(^) :: (Num a, Integral b) => a -> b -> a
+infixr 8 ^</pre>
+  <pre class="sh_haskell">Prelude> "bar" `elem` ["foo","bar","baz"]
+True</pre>
 </div>
 
 <!--
@@ -924,6 +940,8 @@ mean xs = sum xs / fromIntegral (length xs)</pre>
 % time ./prof1 1e8
 zsh: killed     ./prof1 1e8
 ./prof1 1e8  6.72s user 2.71s system 91% cpu 10.368 total</pre>
+  <p class="note">sum iteriert durch, Liste kann aber nicht GCed
+    werden, da length sie auch noch benötigt</p>
 </div>
 <div class="slide">
   <h1>Time Profiling</h1>
@@ -1174,6 +1192,9 @@ data Response
   </p>
 </div>
 <!--
+mtl
+lists: monomorph
+
 * Yesod:
  * Conduits (astro) (15 min)
    * 
