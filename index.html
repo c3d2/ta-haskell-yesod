@@ -17,7 +17,7 @@
 
   <!-- Custom style -->
   <style type="text/css"> 
-    .cover {
+    .cover, h1, h2, h3, h4 {
       text-align: center;
     }
     .speakers {
@@ -785,7 +785,7 @@ MAIN        MAIN                     55           0    0.0    0.0   100.0  100.0
   <h2>Space Profiling</h2>
   <pre>% ./prof1 1e6 +RTS -K256M -hy -i0.01
 % hp2ps -c prof1.hp</pre>
-  <img src="prof2-hy.svg"/>
+  <img src="prof1-hy.svg"/>
   <p class="note">Auch: GHC Core output</p>
 </div>
 <div class="slide">
@@ -942,6 +942,48 @@ countBytes =
                           " bytes"
                         return ()
              in loop 0</pre>
+</div>
+<div class="slide">
+  <h2>WAI: Web Application Interface</h2>
+  <pre class="sh_haskell">Network.Wai> :i Application
+type Application =
+  Request -> ResourceT IO Response</pre>
+  <pre class="sh_haskell">Network.Wai> :i Middleware 
+type Middleware = Application -> Application</pre>
+  <pre class="sh_haskell">Network.Wai.Middleware.Autohead> :t autohead 
+autohead :: Network.Wai.Middleware
+Network.Wai.Middleware.Gzip> :t gzip
+gzip :: GzipSettings -> Network.Wai.Middleware</div>
+</div>
+<div class="slide">
+  <h2>WAI Request &amp; Response</h2>
+  <pre class="sh_haskell">Prelude Network.Wai> :i Request
+data Request
+  = Request {requestMethod :: Method,
+             httpVersion :: HttpVersion,
+             rawPathInfo :: ByteString,
+             rawQueryString :: ByteString,
+             serverName :: ByteString,
+             serverPort :: Int,
+             requestHeaders :: RequestHeaders,
+             isSecure :: Bool,
+             remoteHost :: SockAddr,
+             pathInfo :: [Text],
+             queryString :: Query,
+             requestBody :: Source (ResourceT IO) ByteString,
+             vault :: Vault}</pre>
+  <pre class="sh_haskell">Prelude Network.Wai> :i Response
+data Response
+  = ResponseFile Status ResponseHeaders FilePath (Maybe FilePart)
+  | ResponseBuilder Status ResponseHeaders Builder
+  | ResponseSource Status ResponseHeaders (Source (ResourceT IO) (Flush Builder))</pre>
+</div>
+<div class="slide">
+  <h2>WAI: Motivation</h2>
+  <img src="preliminary-warp-cross-language-benchmarks.png"/>
+  <p>
+    <a href="http://www.yesodweb.com/blog/2011/03/preliminary-warp-cross-language-benchmarks">www.yesodweb.com/blog/2011/03/preliminary-warp-cross-language-benchmarks</a>
+  </p>
 </div>
 <!--
 * Yesod:
