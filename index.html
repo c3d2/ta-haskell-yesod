@@ -74,7 +74,7 @@
 </div>
 <div class="slide">
   <h2>Paket-Management mit Cabal</h2>
-  <pre>apt-get install ghc cabal-install
+  <pre>apt-get install ghc ghc-prof cabal-install
 
 # Updates list of known packages
 cabal update
@@ -84,6 +84,7 @@ cabal install -p yesod-platform</pre>
   <p class="note">Glasgow Haskell Compiler</p>
   <p class="note">Mit Dependencies</p>
   <p class="note">-p für Profiling</p>
+  <p class="note">als User alles nach ~/.cabal</p>
 </div>
 <div class="slide cover">
   <h1>Syntax</h1>
@@ -205,6 +206,16 @@ Prelude> map (+ 1) [1..10]
 [2,3,4,5,6,7,8,9,10,11]
   </pre>
 </div>
+<div class="slide">
+  <h2>Function Composition</h2>
+  <pre class="sh_haskell">Prelude> :i (.)
+(.) :: (b -> c) -> (a -> b) -> a -> c 	-- Defined in `GHC.Base'
+infixr 9 .
+Prelude> :t (+ 5) . (* 3)
+(+ 5) . (* 3) :: Num c => c -> c
+Prelude> ((+ 5) . (* 3)) 23
+74</pre>
+</div>
 
 <!-- Types -->
 <div class="slide">
@@ -297,7 +308,7 @@ instance Num Double -- Defined in `GHC.Float'</pre>
   maxBound :: a</pre>
     <pre class="sh_haskell">class Show a where
   show :: a -> String</pre>
-    <pre class="sh_haskell">read :: Read a => String -> a 	-- Defined in `Text.Read'</pre>
+    <pre class="sh_haskell">read :: Read a => String -> a</pre>
     <p>Anwendungsbeispiel:</p>
     <pre class="sh_haskell">Prelude> newtype Zeigbar =
   Zeig String deriving Show
@@ -594,10 +605,191 @@ id [1,2,3]      == [1,2,3]
     </li>
   </ul>
 </div>
+<div class="slide">
+  <h2>Real World Haskell, Chapter 16: Parsec</h2>
+  <pre class="sh_haskell">import Text.ParserCombinators.Parsec
+
+{- A CSV file contains 0 or more lines, each of which is terminated
+   by the end-of-line character (eol). -}
+csvFile :: GenParser Char st [[String]]
+csvFile = 
+    do result &lt;- many line
+       eof
+       return result
+
+-- Each line contains 1 or more cells, separated by a comma
+line :: GenParser Char st [String]
+line = 
+    do result &lt;- cells
+       eol                       -- end of line
+       return result
+       
+-- Build up a list of cells.  Try to parse the first cell, then figure out 
+-- what ends the cell.
+cells :: GenParser Char st [String]
+cells = 
+    do first &lt;- cellContent
+       next &lt;- remainingCells
+       return (first : next)
+
+-- The cell either ends with a comma, indicating that 1 or more cells follow,
+-- or it doesn't, indicating that we're at the end of the cells for this line
+remainingCells :: GenParser Char st [String]
+remainingCells =
+    (char ',' >> cells)            -- Found comma?  More cells coming
+    &lt;|> (return [])                -- No comma?  Return [], no more cells
+
+-- Each cell contains 0 or more characters, which must not be a comma or
+-- EOL
+cellContent :: GenParser Char st String
+cellContent = 
+    many (noneOf ",\n")
+       
+
+-- The end of line character is \n
+eol :: GenParser Char st Char
+eol = char '\n'
+
+parseCSV :: String -> Either ParseError [[String]]
+parseCSV input = parse csvFile "(unknown)" input</pre>
+</div>
+<div class="slide">
+  <h2>Real World Haskell, Chapter 16: Parsec</h2>
+  <pre class="sh_haskell">import Text.ParserCombinators.Parsec
+
+csvFile = endBy line eol
+line = sepBy cell (char ',')
+cell = many (noneOf ",\n")
+eol = char '\n'
+
+parseCSV :: String -> Either ParseError [[String]]
+parseCSV input = parse csvFile "(unknown)" input
+  </pre>
+</div>
 <!--
-* Combinatoric Parsing: Attoparsec (astro) (15 min)
 * Template Haskell (maloi) (20min)
-* Profiling (astro) (15min)
+-->
+<div class="slide">
+  <h1>Profiling</h1>
+  <p>Beispiel aus Real World Haskell, Chapter 25:</p>
+  <div>
+    <pre class="sh_haskell">import System.Environment
+import Text.Printf
+
+main = do
+    [d] &lt;- map read `fmap` getArgs
+    printf "%f\n" (mean [1..d])
+
+mean :: [Double] -> Double
+mean xs = sum xs / fromIntegral (length xs)</pre>
+  </div>
+  <pre class="incremental">% time ./prof1 1e5 
+50000.5
+./prof1 1e5  0.03s user 0.01s system 89% cpu 0.049 total
+% time ./prof1 1e6
+500000.5
+./prof1 1e6  0.31s user 0.09s system 98% cpu 0.400 total
+% time ./prof1 1e7
+5000000.5
+./prof1 1e7  2.95s user 0.60s system 97% cpu 3.626 total
+% time ./prof1 1e8
+zsh: killed     ./prof1 1e8
+./prof1 1e8  6.72s user 2.71s system 91% cpu 10.368 total</pre>
+</div>
+<div class="slide">
+  <h2>Time Profiling</h2>
+  <pre>% ghc --make -O2 -prof -caf-all -auto-all prof1
+% ./prof1 1e7 +RTS -p  <span class="note">-P, -pa</span>
+5000000.5
+% cat prof1.prof 
+	Wed Aug 29 02:04 2012 Time and Allocation Profiling Report  (Final)
+
+	   prof1 +RTS -p -RTS 1e7
+
+	total time  =        1.74 secs   (1738 ticks @ 1000 us, 1 processor)
+	total alloc = 1,680,119,104 bytes  (excludes profiling overheads)
+
+COST CENTRE MODULE  %time %alloc
+
+main        Main     86.6  100.0
+mean        Main     13.4    0.0
+
+
+                                                      individual     inherited
+COST CENTRE MODULE                  no.     entries  %time %alloc   %time %alloc
+
+MAIN        MAIN                     55           0    0.0    0.0   100.0  100.0
+ main       Main                    111           0   86.6  100.0   100.0  100.0
+  mean      Main                    113           1   13.4    0.0    13.4    0.0
+ CAF:main1  Main                    108           0    0.0    0.0     0.0    0.0
+  main      Main                    110           1    0.0    0.0     0.0    0.0
+ CAF:main3  Main                    107           0    0.0    0.0     0.0    0.0
+  main      Main                    112           0    0.0    0.0     0.0    0.0
+ CAF        GHC.Conc.Signal         101           0    0.0    0.0     0.0    0.0
+ CAF        GHC.IO.Encoding         100           0    0.0    0.0     0.0    0.0
+ CAF        GHC.IO.Handle.FD         99           0    0.0    0.0     0.0    0.0
+ CAF        Text.Read.Lex            95           0    0.0    0.0     0.0    0.0
+ CAF        GHC.Float                90           0    0.0    0.0     0.0    0.0
+ CAF        GHC.IO.Encoding.Iconv    82           0    0.0    0.0     0.0    0.0</pre>
+</div>
+<div class="slide">
+  <h2>Space Profiling</h2>
+  <pre>% ghc --make -rtsopts -prof -caf-all -auto-all prof1
+% ./prof1 1e6 +RTS -K256M -hc -i0.01
+% hp2ps -c prof1.hp</pre>
+  <img src="prof1-hc.svg"/>
+</div>
+<div class="slide">
+  <h2>Space Profiling</h2>
+  <pre>% ./prof1 1e6 +RTS -K256M -hy -i0.01
+% hp2ps -c prof1.hp</pre>
+  <img src="prof2-hy.svg"/>
+  <p class="note">Auch: GHC Core output</p>
+</div>
+<div class="slide">
+  <h2>Strictness</h2>
+  <pre class="sh_haskell">import System.Environment
+import Text.Printf
+import Data.List (foldl')
+
+main = do
+    [d] &lt;- map read `fmap` getArgs
+    printf "%f\n" (mean [1..d])
+
+mean :: [Double] -> Double
+mean xs = s / fromIntegral n
+  where
+    (n, s)     = foldl' k (0, 0) xs
+    k (n, s) x = n `seq` s `seq` (n+1, s+x)</pre>
+  <pre>% ./prof2 1e8 +RTS -sstderr  
+50000000.5
+  53,600,200,824 bytes allocated in the heap
+      31,319,592 bytes copied during GC
+          62,720 bytes maximum residency (1 sample(s))
+          26,816 bytes maximum slop
+               1 MB total memory in use (0 MB lost due to fragmentation)
+
+                                    Tot time (elapsed)  Avg pause  Max pause
+  Gen  0     102796 colls,     0 par    0.66s    0.66s     0.0000s    0.0003s
+  Gen  1         1 colls,     0 par    0.00s    0.00s     0.0006s    0.0006s
+
+  INIT    time    0.00s  (  0.00s elapsed)
+  MUT     time   32.71s  ( 32.84s elapsed)
+  GC      time    0.66s  (  0.66s elapsed)
+  RP      time    0.00s  (  0.00s elapsed)
+  PROF    time    0.00s  (  0.00s elapsed)
+  EXIT    time    0.00s  (  0.00s elapsed)
+  Total   time   33.38s  ( 33.50s elapsed)
+
+  %GC     time       2.0%  (2.0% elapsed)
+
+  Alloc rate    1,638,238,233 bytes per MUT second
+
+  Productivity  98.0% of total user, 97.7% of total elapsed
+</pre>
+  <p class="note">In RWH: unboxed strict fields, fusion w/o heap alloc</p>
+</div>
+<!--
 * Parallel Haskell (maloi) (10min)
 * Foreign (astro) (5min)
 
