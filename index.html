@@ -673,7 +673,7 @@ Prelude> fmap Just (+) Just 5
     <p><strong>pure</strong> nimmt ein Argument beliebigen Typs und packt es in einen default Container oder einen effektfreien Kontext</p>
     </li>
     <li>
-    <p>Damit lassen sich auch effektfreie Argumente inmitten diese Berechnung einbauen</p>
+    <p>Damit lassen sich auch effektfreie Argumente inmitten dieser Berechnung einbauen</p>
       <pre class="sh_haskell">g <$> x1 <*> pure x2 <*> x3</pre>
     </li>
   </ul>
@@ -702,7 +702,7 @@ Prelude Control.Applicative> (*) <$> [7,8,9] <*> [1,2]
   </ul>
 </div>
 <div class="slide">
-  <h1>Applicative - Liste</h1>
+  <h1>Applicative - Liste (2)</h1>
   <ul class="incremental">
     <li style="list-style-type: none;">
       <pre class="sh_haskell">newtype ZipList a = ZipList { getZipList :: [a] } -- pro Datentyp nur eine Instanz einer Typklasse</pre>
@@ -736,6 +736,101 @@ Prelude Control.Applicative> getZipList $ (mod) <$> ZipList [9,27,56] <*> ZipLis
     </li>
     <li>
     <p>Die restlichen Gesetze sichern nur, dass sich pure so verhaelt wie man es erwartet</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - Easy</h1>
+    <h3>A monad is just a monoid in the category of endofunctors, what's the problem?</h3>
+</div>
+<div class="slide">
+  <h1>Monad - Just another type class</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">class Monad m where
+  return :: a -> m a
+  (>>=)  :: m a -> (a -> m b) -> m b
+  (>>)   :: m a -> m b -> m b
+  m >> n = m >>= \_ -> n
+
+  fail   :: String -> m a</pre>
+    </li>
+    <li>
+    <p><strong>return</strong> entspricht pure aus Applicative: <strong>return IS pure</strong></p>
+    <p><strong>Jede Monad ist ein Applicative</strong> Warum aber kein Constraint wie bei Applicative?</p>
+    </li>
+    <li>
+    <p>Monads werden fuer IO in Haskell verwendet und waren vor Applicative in Haskell</p>
+    <p>Nachtraeglich zu verlangen ein Monad muss ein Applicative sein, wuerde viel Code kaputt machen etc.</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - Just another type class (2)</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">class Monad m where
+  return :: a -> m a
+  (>>=)  :: m a -> (a -> m b) -> m b
+  (>>)   :: m a -> m b -> m b
+  m >> n = m >>= \_ -> n
+
+  fail   :: String -> m a</pre>
+    </li>
+    <li>
+    <p><strong>(>>)</strong> ist ein Spezialfall von (>>=) und es gibt eine Default Implementierung</p>
+    <p>(>>) ignoeriert das Ergebnis einer Berechnung aber nicht ihre Effekte</p>
+    </li>
+    <li>
+    <p><strong>fail</strong> ist ein Hack und gehoert eigtl. nicht in Monad - daher der Name? ;)</p>
+      <pre class="sh_haskell">do (x:xs) <- foo -- Pattern matching fails wenn foo eine leere Liste produziert -> fail
+   bar x</pre>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - Just another type class (3)</h1>
+  <ul class="incremental">
+    <li style="list-style-type: none;">
+      <pre class="sh_haskell">class Monad m where
+  return :: a -> m a
+  (>>=)  :: m a -> (a -> m b) -> m b
+  (>>)   :: m a -> m b -> m b
+  m >> n = m >>= \_ -> n</pre>
+    </li>
+    <li>
+    <p><strong>(>>=)</strong> nennt man <strong>bind</strong> und ermoeglicht eine Berechnung abhaengig von dem Ergebnis einer davor stattfinden Berechnung zu machen</p>
+    </li>
+    <li>
+    <p>Looking at the types</p>
+    <pre>(>>=)  :: m a -> (a -> m b) -> m b</pre>
+    </li>
+    <li>
+      <p>Das zweite Argument, (a -> m b), ist eine Berechnung, die als Eingabe das Ergebnis der ersten Berechnung nimmt und dann die Berechnung m b durchfuehren kann</p>
+      <p><strong>x >>= k</strong> ist also eine Berechnung, die x ausfuehrt und dann das Ergebnix von x nutzt um zu <strong>entscheiden</strong> welche Berechnung es als zweites ausfuehrt und nimmt das Ergebnis dieser (zweiten) Berechnung als Ergebnis der gesamten Berechnung</p>
+    </li>
+  </ul>
+</div>
+<div class="slide">
+  <h1>Monad - Warum reicht Applicative nicht</h1>
+  <ul class="incremental">
+    <li>
+      <p>Kann man (>>=) nur mit fmap, pure und <*> darstellen?</p>
+    </li>
+    <li>
+      <p>Wenn x vom Typ m a ist und k vom Typ a -> m b, kann man nur k auf x anwenden</p>
+      <p>Das geht natuerlich nur mit fmap und fmap k hat dann den Typ <strong>m a -> m (m b)</strong></p>
+      <p>Wenn man das jetzt auf m a anwendet bekommt man etwas mit dem Typ <strong>m (m b)</strong></p>
+    <p>Hier ist Schluss - Wir wollen aber etwas vom Typ <strong>m b</strong>
+    </li>
+    <li>
+    <p>Wir brauchen also eine Funktion, die mehrere <strong>m</strong>s zusammenfuehrt</p>
+    <pre class="sh_haskell">join :: m (m a) -> m a</pre>
+    </li>
+    <li>
+    <p>Man kann Monad auch wie folgt definieren: (Categorytheorists can dance now)</p>
+    <pre class="sh_haskell">class Applicative m => Monad' m where
+  join :: m (m a) -> m a</pre>
     </li>
   </ul>
 </div>
